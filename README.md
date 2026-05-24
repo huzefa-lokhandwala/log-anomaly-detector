@@ -53,6 +53,7 @@ python3 main.py --file data/apache.log --window 1h --threshold 2.5
 
 ## Project structure
 
+```
 log-anomaly-detector/
 ├── data/           ← place log files here
 ├── reports/        ← HTML reports saved here
@@ -61,6 +62,7 @@ log-anomaly-detector/
 │   ├── detector.py ← Z-score anomaly detection
 │   └── reporter.py ← HTML report generation
 └── main.py         ← CLI entry point
+```
 
 ---
 
