@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Log Anomaly Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 32px; }
@@ -13,6 +14,8 @@
         .card p { font-size: 13px; color: #888; margin-bottom: 6px; }
         .card h3 { font-size: 28px; color: #222; }
         .card h3.red { color: #e74c3c; }
+
+        .chart-container { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); margin-bottom: 32px; }
 
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.1); margin-bottom: 32px; }
         th { background: #222; color: white; padding: 12px 16px; text-align: left; font-size: 13px; }
@@ -46,6 +49,12 @@
         <p>Log Files Analyzed</p>
         <h3>{{ summary.log_files_analyzed }}</h3>
     </div>
+</div>
+
+<!-- Chart -->
+<h2>Anomaly Score by Time Window</h2>
+<div class="chart-container">
+    <canvas id="anomalyChart" height="80"></canvas>
 </div>
 
 <!-- Anomalies Table -->
@@ -103,6 +112,45 @@
         {% endfor %}
     </tbody>
 </table>
+
+<script>
+    const labels = {{ labels | safe }};
+    const scores = {{ scores | safe }};
+
+    const ctx = document.getElementById('anomalyChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Anomaly Score',
+                data: scores,
+                backgroundColor: scores.map(s => s >= 4 ? '#e74c3c' : s >= 2.5 ? '#f39c12' : '#3498db'),
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => `Score: ${ctx.raw}`
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Z-Score' }
+                },
+                x: {
+                    ticks: { maxRotation: 45, font: { size: 10 } }
+                }
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

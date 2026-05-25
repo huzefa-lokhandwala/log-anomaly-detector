@@ -115,3 +115,15 @@ def get_summary():
         'total_scans': total_scans,
         'log_files_analyzed': log_files
     }
+
+def get_chart_data():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT time_window, error_rate, anomaly_score
+        FROM anomalies
+        ORDER BY time_window ASC
+    ''')
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
