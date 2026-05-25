@@ -66,4 +66,3 @@ def generate_report(results, output_path='reports/report.html'):
     with open(output_path, 'w') as f:
         f.write(html)
 
-    print(f"Report saved → {output_path}")

@@ -2,6 +2,7 @@ import argparse
 from src.parser import parse_log_file, extract_features
 from src.detector import detect_anomalies
 from src.reporter import generate_report
+from src.database import init_db, save_anomalies
 
 def main():
     parser = argparse.ArgumentParser(
@@ -10,11 +11,13 @@ def main():
     )
 
     parser.add_argument('--file', required=True, help='Path to log file')
-    parser.add_argument('--window', default='1h', help='Time window size (e.g. 1h, 30min, 2h)')
-    parser.add_argument('--threshold', type=float, default=2.5, help='Z-score threshold for anomaly')
+    parser.add_argument('--window', default='1h', help='Time window size')
+    parser.add_argument('--threshold', type=float, default=2.5, help='Z-score threshold')
     parser.add_argument('--output', default='reports/report.html', help='Output report path')
 
     args = parser.parse_args()
+
+    init_db()
 
     print(f"\n→ Loading log file: {args.file}")
     df = parse_log_file(args.file)
@@ -33,6 +36,7 @@ def main():
     print(f"\n✓ Windows analyzed : {len(results)}")
     print(f"✓ Anomalies found  : {len(anomalies)}")
 
+    save_anomalies(results, args.file)
     generate_report(results, output_path=args.output)
     print(f"✓ Report saved     : {args.output}\n")
 
