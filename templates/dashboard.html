@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Log Anomaly Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 32px; }
+        h1 { color: #222; margin-bottom: 24px; }
+        h2 { color: #444; margin: 32px 0 16px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .summary { display: flex; gap: 16px; margin-bottom: 32px; }
+        .card { background: white; border-radius: 8px; padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); flex: 1; }
+        .card p { font-size: 13px; color: #888; margin-bottom: 6px; }
+        .card h3 { font-size: 28px; color: #222; }
+        .card h3.red { color: #e74c3c; }
+
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.1); margin-bottom: 32px; }
+        th { background: #222; color: white; padding: 12px 16px; text-align: left; font-size: 13px; }
+        td { padding: 12px 16px; border-bottom: 1px solid #eee; font-size: 14px; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f9f9f9; }
+
+        .critical { color: #e74c3c; font-weight: bold; }
+        .warning  { color: #f39c12; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h1>Log Anomaly Dashboard</h1>
+
+<!-- Summary Cards -->
+<div class="summary">
+    <div class="card">
+        <p>Total Anomalies</p>
+        <h3 class="red">{{ summary.total_anomalies }}</h3>
+    </div>
+    <div class="card">
+        <p>Critical</p>
+        <h3 class="red">{{ summary.critical_count }}</h3>
+    </div>
+    <div class="card">
+        <p>Total Scans</p>
+        <h3>{{ summary.total_scans }}</h3>
+    </div>
+    <div class="card">
+        <p>Log Files Analyzed</p>
+        <h3>{{ summary.log_files_analyzed }}</h3>
+    </div>
+</div>
+
+<!-- Anomalies Table -->
+<h2>Detected Anomalies</h2>
+<table>
+    <thead>
+        <tr>
+            <th>No.</th>
+            <th>Log File</th>
+            <th>Time Window</th>
+            <th>Requests</th>
+            <th>Errors</th>
+            <th>Error Rate</th>
+            <th>Score</th>
+            <th>Severity</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in anomalies %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            <td>{{ row[4] }}</td>
+            <td>{{ "%.1f%%"|format(row[5] * 100) }}</td>
+            <td>{{ row[6] }}</td>
+            <td class="{{ row[7]|lower }}">{{ row[7] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Scan History Table -->
+<h2>Scan History</h2>
+<table>
+    <thead>
+        <tr>
+            <th>No.</th>
+            <th>Log File</th>
+            <th>Scanned At</th>
+            <th>Windows Analyzed</th>
+            <th>Anomalies Found</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in history %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            <td>{{ row[4] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>
